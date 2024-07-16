@@ -1,3 +1,5 @@
 G = ({S',A}; {a,b,id}; P; S')
-P:  S' -> a S' | A 
-    A -> b A | id &
+P:  S' -> a S' | A
+    A -> b A | id | &  
+     
+   

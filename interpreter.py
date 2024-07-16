@@ -32,13 +32,8 @@ def interpret(grammar, word):
         for rule in rules:
             symbols = rule.split(' ')
             word_index = 0
-            for symbol in symbols:
-
-                if symbol == '&' and word_index == len(word):
-                    word_ = ' '.join(word)
-                    path.append((current_state + ' -> ' + rule, word_))
-                    return True
-                
+            count = 0
+            for symbol in symbols: 
                 if symbol in grammar.non_terminals:
                     result = match_rule(symbol, word[word_index:], path)
                     if result:
@@ -52,6 +47,14 @@ def interpret(grammar, word):
                 else:
                     break
                 
+                if word_index == len(word):
+                    if symbol == '&' or count == len(symbols) - 1:
+                        print("final")
+                        word_ = ' '.join(word)
+                        path.append((current_state + ' -> ' + rule, word_))
+                        return True
+                
+                count += 1
 
         if(len(path) == 0):
             state = []
