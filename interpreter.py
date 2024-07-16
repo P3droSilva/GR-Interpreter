@@ -8,6 +8,8 @@ def interpret(grammar, word):
             symbols = rule.split(' ')
             for symbol in symbols:
                 if symbol == '&':
+                    if any("ERROR! " in p for p in path):
+                            path.clear()
                     word_ = ' '.join(word)
                     path.append((current_state + ' -> ' + rule, word_))
                     return True
@@ -37,19 +39,27 @@ def interpret(grammar, word):
                 if symbol in grammar.non_terminals:
                     result = match_rule(symbol, word[word_index:], path)
                     if result:
+                        if any("ERROR! " in p for p in path):
+                            path.clear()
                         word_ = ' '.join(word)
                         path.append((current_state + ' -> ' + rule, word_))
                         return True
                     else:
+                  #      word_ = ' '.join(word)
+                  #      path.append(('TENTATIVA INCORRETA: '+ current_state + ' -> ' + rule, word_))
                         break
                 elif symbol == word[word_index] and word_index < len(word) and symbol in grammar.terminals:
                     word_index += 1
                 else:
+                  #  word_ = ' '.join(word)
+                  #  path.append(('ESTADO QUE FALHOU: '+ current_state + ' -> ' + rule, word_))
                     break
                 
                 if word_index == len(word):
                     if symbol == '&' or count == len(symbols) - 1:
-                        print("final")
+                        if any("ERROR! " in p for p in path):
+                            path.clear()
+                        
                         word_ = ' '.join(word)
                         path.append((current_state + ' -> ' + rule, word_))
                         return True
