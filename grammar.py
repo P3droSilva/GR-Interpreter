@@ -8,9 +8,10 @@ class Grammar:
 
         with open(file, 'r') as f:
             for line in f:
-                line = line.replace(' ', '')
+                line = line.strip()
 
-                if 'G=' in line:
+                if 'G =' in line:
+                    line = line.replace(' ', '')
                     line = line.replace('G=','')
                     line = line.replace('(','')
                     line = line.replace(')','')
@@ -40,37 +41,42 @@ class Grammar:
                     
         return non_terminals, terminals, rules, initial_state
 
-    def validate(self):
+    def parser(self):
         if self.initial_state not in self.non_terminals:
             print("The initial state is not a valid non-terminal")
             return False
+        
+        for t in self.terminals:
+            if t.isupper(): 
+                print(t + " is not a valid terminal")
+                return False
 
         for nt in self.non_terminals:
-
             if nt.islower(): 
                 print(nt + " is not a valid non-terminal")
                 return False
             
             for rule in self.rules[nt]:
+                symbols = rule.split(' ')
                 count = 0
-                lastCharIdx = len(rule) - 1
-                for c in rule:
-                    if c.isupper():
-                        if c not in self.non_terminals: # verify if the non-terminal is an existing rule
-                            print(c + " is not a valid rule")
+                lastSymbolIdx = len(symbols) - 1     
+                for symbol in symbols:
+                    if symbol.isupper():
+                        if symbol not in self.non_terminals: # verify if the non-terminal is an existing rule
+                            print(symbol + " is not a valid rule")
                             return False
                         
-                        if count != lastCharIdx: # verify if the non-terminal is in the last position
-                            print("The non-terminal " + c + " is not in the last position")
+                        if count != lastSymbolIdx: # verify if the non-terminal is in the last position
+                            print("The non-terminal " + symbol + " is not in the last position")
                             return False   
                         
-                    elif c.islower():
-                        if c not in self.terminals and c != '~':
-                            print(c + " is not a valid terminal")
+                    elif symbol.islower():
+                        if symbol not in self.terminals and symbol != '&':
+                            print(symbol + " is not a valid terminal")
                             return False 
 
-                    if c == '~': # verify if the empty string is in the last position
-                        if count != lastCharIdx:
+                    if symbol == '&': # verify if the empty string is in the last position
+                        if count != lastSymbolIdx:
                             print("The empty string is not in the last position")
                             return False
                         

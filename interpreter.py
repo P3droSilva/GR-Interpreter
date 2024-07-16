@@ -1,47 +1,66 @@
-import grammar as gr
 
 #module to interpret the grammar
 
 def interpret(grammar, word):
-    def check_final_state(current_state, word):
-        print(f"Current state: {current_state}, word: {word}")
-        for rule in grammar.rules.get(current_state, []):
-            if rule == '~':
-                return True
-            elif len(rule) == 1 and rule in grammar.non_terminals:
-                if check_final_state(rule, word):
+    def check_final_state(current_state, word, path):
+        rules = grammar.rules.get(current_state, [])
+        for rule in rules:
+            symbols = rule.split(' ')
+            for symbol in symbols:
+                if symbol == '&':
+                    word_ = ' '.join(word)
+                    path.append((current_state + ' -> ' + rule, word_))
                     return True
+                elif symbol in grammar.non_terminals:
+                    if check_final_state(symbol, word, path):
+                        return True
+                else:
+                    break
+                
+        if(len(path) == 0):
+            state = []
+            for rule in rules:
+                state.append(current_state + ' -> ' + rule)
+            path.append("ERROR! Expected symbol: &" + "\nCurrent state: " + str(state))
         return False
 
-    def match_rule(current_state, word):
+    def match_rule(current_state, word, path):
         if not word:
-            return check_final_state(current_state, word)
-        else:
-            print(f"Current state: {current_state}, word: {word}")
+            return check_final_state(current_state, word, path)
         
-        for rule in grammar.rules.get(current_state, []):
+        rules = grammar.rules.get(current_state, [])
+        for rule in rules:
+            symbols = rule.split(' ')
             word_index = 0
-            i = 0
+            for symbol in symbols:
 
-            while i < len(rule):
-                if rule[i] in grammar.non_terminals:
-                    # Try to match the non-terminal
-                    result = match_rule(rule[i], word[word_index:])
+                if symbol == '&' and word_index == len(word):
+                    word_ = ' '.join(word)
+                    path.append((current_state + ' -> ' + rule, word_))
+                    return True
+                
+                if symbol in grammar.non_terminals:
+                    result = match_rule(symbol, word[word_index:], path)
                     if result:
+                        word_ = ' '.join(word)
+                        path.append((current_state + ' -> ' + rule, word_))
                         return True
                     else:
-                        # Reset and try next rule
                         break
-                elif rule[i] == word[word_index] and word_index < len(word):
+                elif symbol == word[word_index] and word_index < len(word) and symbol in grammar.terminals:
                     word_index += 1
                 else:
                     break
-                i += 1
-            
-            # if rule == '~' and word_index == len(word):
-            #     print("current state " + current_state)
-            #     return True
+                
 
+        if(len(path) == 0):
+            state = []
+            for rule in rules:
+                state.append(current_state + ' -> ' + rule)
+            path.append("ERROR! Expected symbol: " + word[word_index] + "\nCurrent state: " + str(state))
         return False
 
-    return match_rule(grammar.initial_state, word)
+    word = word.strip()
+    word = word.split(' ')
+    path = []
+    return match_rule(grammar.initial_state, word, path), path[::-1]
