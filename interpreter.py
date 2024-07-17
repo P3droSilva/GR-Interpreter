@@ -26,7 +26,9 @@ def interpret(grammar, word):
             path.append("ERROR! Expected symbol: &" + "\nCurrent state: " + str(state))
         return False
 
-    def match_rule(current_state, word, path):
+    def match_rule(current_state, word, path):  
+        print("Current state: " + current_state)
+        print("Word: " + str(word))
         if not word:
             return check_final_state(current_state, word, path)
         
@@ -38,6 +40,7 @@ def interpret(grammar, word):
             for symbol in symbols: 
                 if symbol in grammar.non_terminals:
                     result = match_rule(symbol, word[word_index:], path)
+                    print(str(result) + " " + symbol)
                     if result:
                         if any("ERROR! " in p for p in path):
                             path.clear()
@@ -63,7 +66,7 @@ def interpret(grammar, word):
                         word_ = ' '.join(word)
                         path.append((current_state + ' -> ' + rule, word_))
                         return True
-                    else:
+                    elif symbols[count + 1]in grammar.terminals:
                         break
                 
                 count += 1
