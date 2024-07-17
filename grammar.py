@@ -46,6 +46,15 @@ class Grammar:
             print("The initial state is not a valid non-terminal")
             return False
         
+        if len(self.terminals) != len(set(self.terminals)):
+            print("The grammar contains repeated terminal symbols")
+            return False
+
+        
+        if len(self.non_terminals) != len(set(self.non_terminals)):
+            print("The grammar contains repeated non terminal symbols")
+            return False
+        
         for t in self.terminals:
             if t.isupper(): 
                 print(t + " is not a valid terminal")

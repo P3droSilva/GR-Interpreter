@@ -63,6 +63,8 @@ def interpret(grammar, word):
                         word_ = ' '.join(word)
                         path.append((current_state + ' -> ' + rule, word_))
                         return True
+                    else:
+                        break
                 
                 count += 1
 

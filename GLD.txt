@@ -1,5 +1,5 @@
-G = ({S',A}; {a,b,id}; P; S')
-P:  S' -> a A | A 
-    A -> a b 
+G = ({A, B,C}; {a,b}; P; A)
+P:  A -> a a B
+    B -> a B | b B| a C| b C
+    C -> a a 
      
-   
